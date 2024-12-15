@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Toast component</title>
+
+    <style>
+      /* Ignore this, page style*/
+      main {
+        display: flex;
+        justify-content: center;
+      }
+
+      .form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 300px;
+      }
+
+      label {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+      /* Ignore this, page style*/
+
+      #toast-container {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        gap: 15px;
+        margin: 20px;
+      }
+
+      .toast-container-position-top-left {
+        top: 0;
+        left: 0;
+      }
+
+      .toast-container-position-top-right {
+        top: 0;
+        right: 0;
+      }
+
+      .toast-container-position-bottom-left {
+        bottom: 0;
+        left: 0;
+      }
+
+      .toast-container-position-bottom-right {
+        bottom: 0;
+        right: 0;
+      }
+
+      .toast {
+        display: flex;
+        gap: 20px;
+        padding: 20px;
+        justify-content: space-between;
+        border-radius: 5px;
+      }
+
+      .toast-success {
+        border: 1px solid green;
+      }
+
+      .toast-warning {
+        border: 1px solid gold;
+      }
+
+      .toast-error {
+        border: 1px solid red;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <!-- Ignore this, playground -->
+      <form class="form">
+        <header>
+          <h1>Toast component</h1>
+          <p>A toast component implementation</p>
+        </header>
+
+        <label>
+          Message
+          <input id="toast-message" type="text" placeholder="Internal server error" required />
+        </label>
+
+        <label>
+          Type:
+          <select id="toast-type" required>
+            <option value="success">Success</option>
+            <option value="warning">Warning</option>
+            <option value="error">Error</option>
+          </select>
+        </label>
+
+        <label>
+          Position:
+          <select id="toast-container-position" required>
+            <option value="top-left">Top and left</option>
+            <option value="top-right">Top and right</option>
+            <option value="bottom-left">Bottom and left</option>
+            <option value="bottom-right">Bottom and right</option>
+          </select>
+        </label>
+
+        <label>
+          Time expiration in milliseconds
+          <input id="toast-time-expiration" type="number" placeholder="2000" required />
+        </label>
+
+        <button>Generate a toast</button>
+      </form>
+      <!-- Ignore this, playground -->
+
+      <!-- Toasts container -->
+      <div id="toast-container"></div>
+    </main>
+
+    <script>
+      document.querySelector('form').addEventListener('submit', function (ev) {
+        ev.preventDefault();
+
+        /* Container */
+        const containerPosition = document.getElementById('toast-container-position');
+        Toast.setPosition(containerPosition.options[containerPosition.selectedIndex].value);
+
+        /* Toast */
+        const message = document.getElementById('toast-message').value;
+        const type = document.getElementById('toast-type');
+        const timeExpiration = document.getElementById('toast-time-expiration').value;
+        Toast.create(message, type.options[type.selectedIndex].value, { timeExpiration });
+      });
+
+      class Random {
+        static string(length) {
+          const characters = 'ABCDEFGHIJKLMNOPQRSTUVXYWZabcdefghijklmnopqrstuvxywz0123456789.,[]{}+_)(*&^%$#@!@~)';
+
+          let randomString = '';
+          for (let index = 0; index < length; index++) {
+            const max = characters.length - 1;
+            randomString += characters[Math.floor(Math.random() * (max - 0))];
+          }
+
+          return randomString;
+        }
+      }
+
+      class Toast {
+        static container = document.getElementById('toast-container');
+        static types = {
+          success: 'success',
+          warning: 'warning',
+          error: 'error',
+        };
+
+        static setPosition(position) {
+          this.container.classList.forEach((value) => {
+            if (!value.includes('toast-container-position')) return;
+            this.container.classList.remove(value);
+          });
+
+          this.container.classList.add(`toast-container-position-${position}`);
+        }
+
+        static create(message, type, options) {
+          const toast = document.createElement('div');
+          const id = Random.string(50);
+
+          toast.id = id;
+
+          toast.classList.add('toast');
+          toast.classList.add(`toast-${type}`);
+
+          toast.innerHTML = `
+            <span class='toast-message'>${message}</span>
+            <button onclick='Toast.delete("${id}")'>X</button>
+          `;
+
+          this.container.append(toast);
+
+          setTimeout(
+            () => {
+              document.getElementById(id)?.remove();
+            },
+            options?.timeExpiration ? options?.timeExpiration : 1000
+          );
+        }
+
+        static delete(id) {
+          document.getElementById(id)?.remove();
+        }
+      }
+    </script>
+  </body>
+</html>
