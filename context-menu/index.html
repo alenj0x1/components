@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+      #menu {
+        position: absolute;
+        background: rgb(253, 253, 253);
+        border: 1px solid rgb(202, 202, 202);
+        border-radius: 5px;
+        padding: 0;
+      }
+
+      #menu .property {
+        list-style: none;
+        padding: 5px 10px;
+      }
+
+      .property:hover {
+        background: rgb(219, 219, 219);
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      const body = document.querySelector("body");
+      let menu = null;
+      let menuProperties = [
+        {
+          value: "Crear",
+        },
+        {
+          value: "Editar",
+        },
+        {
+          value: "Guardar cambios",
+        },
+        {
+          value: "Propiedades",
+        },
+      ];
+      let menuEnabled = false;
+
+      document.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+
+        if (menuEnabled) return;
+
+        const createMenu = document.createElement("ul");
+
+        createMenu.id = "menu";
+        createMenu.style.top = e.pageY + "px";
+        createMenu.style.left = e.pageX + "px";
+
+        for (const property of menuProperties) {
+          const createProperty = document.createElement("li");
+
+          createProperty.textContent = property.value;
+          createProperty.classList.add("property");
+
+          createMenu.append(createProperty);
+        }
+
+        createMenu.addEventListener("click", (e) => {});
+
+        menu = createMenu;
+        body.append(menu);
+
+        menuEnabled = true;
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!menuEnabled || e.srcElement.classList.contains("property")) return;
+
+        body.removeChild(menu);
+        menu = null;
+        menuEnabled = false;
+      });
+
+      function deleteMenu() {}
+    </script>
+  </body>
+</html>
